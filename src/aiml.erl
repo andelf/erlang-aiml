@@ -15,9 +15,11 @@
 %%% API
 %%%===================================================================
 
+
 main([]) ->
-    %{Doc, _} = xmerl_scan:file("./cn-test.aiml"),
-    {Doc, _} = xmerl_scan:file("./std-lizards.aiml"),
+    main(["./cn-startup.xml"]);
+main([ScriptName]) ->
+    {Doc, _} = xmerl_scan:file(ScriptName),
     xmerl:export([Doc], xmerl_aiml).
 
 

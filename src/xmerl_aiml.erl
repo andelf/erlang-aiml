@@ -15,10 +15,8 @@
          '#root#'/4,
          '#element#'/5,
          '#text#'/1]).
-%-export([msg/4, font/4, text/4, url/4, face/4, cface/4,
-%        img/4, reply/4, thumb/4, imagedata/4]).
--export([main/1]).
 -compile([export_all]).
+
 -include_lib("xmerl/include/xmerl.hrl").
 
 %%%===================================================================
@@ -46,10 +44,7 @@
     Data.
 
 %% {rule, {pattern(), that(), topic()}, template()}
-aiml(Data, Attr, _, _) ->
-    [#xmlAttribute{name=Name}] = Attr,
-    Topic = proplists:get_value(topic, Data),
-    io:format("~p~n", [Data]),
+aiml(Data, _Attr, _, _) ->
     Result = lists:foldl(fun([], Acc) -> Acc;
                             (Rules, Acc) when is_list(Rules) ->
                                  Acc ++ Rules;
@@ -92,7 +87,7 @@ template(Data, _, _, _) ->
 
 star([], [], _, _) ->
     {star, 1};
-star(Data, Attr, _, _) ->
+star([], Attr, _, _) ->
     [#xmlAttribute{name=index, value=Index}] = Attr,
     {star, list_to_integer(Index)}.
 
@@ -207,11 +202,6 @@ javascript(Data, _, _, _) ->
     {javascript, Data}.
 
 
-main(_) ->
-    %{Doc, _} = xmerl_scan:file("./cn-test.aiml"),
-    {Doc, _} = xmerl_scan:file("./std-lizards.aiml"),
-    xmerl:export([Doc], ?MODULE).
-
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
@@ -225,3 +215,8 @@ filter_empty_string(List) ->
                     (_)  -> true
                  end,
                  List).
+
+attrs_to_proplist(Attrs) ->
+    lists:map(fun(#xmlAttribute{name=Name, value=Value}) ->
+                      {Name, Value}
+              end, Attrs).
